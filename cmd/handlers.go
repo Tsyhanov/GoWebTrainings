@@ -2,20 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("login handler")
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	log.Println("Index handler")
-	err := tmpl.ExecuteTemplate(w, "index.tmpl.html", nil)
-
-	if err != nil {
-		log.Println("index template execution error")
-	}
+func Index(c echo.Context) error {
+	fmt.Println("login handle")
+	return c.Render(http.StatusOK, "index.tmpl.html", "index")
 
 }
