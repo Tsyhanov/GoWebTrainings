@@ -1,4 +1,4 @@
-package main
+package render
 
 import (
 	"io"
@@ -8,9 +8,9 @@ import (
 )
 
 type Template struct {
-	templates map[string]*template.Template
+	Templates map[string]*template.Template
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates[name].ExecuteTemplate(w, name, data)
+	return t.Templates[name].ExecuteTemplate(w, name, data)
 }
