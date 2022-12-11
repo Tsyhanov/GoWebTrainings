@@ -26,7 +26,9 @@ func PostLogin(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Token is incorrect")
 	}
+
 	return c.Redirect(http.StatusSeeOther, "/restricted/home")
+
 }
 
 //show home page after login
