@@ -35,8 +35,10 @@ func main() {
 	//routes restricted
 	r := e.Group("/restricted")
 	r.Use(middleware.JWTWithConfig(config.AuthConfig))
+	r.GET("/restricted/home", handlers.Home)
 
 	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", fs)))
+	r.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", fs)))
 
 	fmt.Println("web_test1: Echo Server started")
 	e.Logger.Fatal(e.Start(":8080"))

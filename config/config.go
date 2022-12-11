@@ -6,11 +6,13 @@ import (
 	"test-registration-form/models"
 
 	"github.com/labstack/echo/v4/middleware"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AppConfig struct {
-	Port      string
-	JWTSecret string
+	Port            string
+	TokenCookieName string
+	JWTSecret       string
 }
 
 var Config AppConfig
@@ -22,14 +24,15 @@ func SetConfig() {
 			Port:      getEnv("port", "5000"),
 			JWTSecret: getEnv("jwtSecret", ""),
 		*/
-		Port:      ":8080",
-		JWTSecret: "my_private_key",
+		Port:            ":8080",
+		TokenCookieName: "access-token",
+		JWTSecret:       "my_private_key",
 	}
 
 	AuthConfig = middleware.JWTConfig{
 		Claims:      &models.JWTClaims{},
-		SigningKey:  []byte("secret"),
-		TokenLookup: "cookie:Authorization",
+		SigningKey:  []byte(GetJWTSecret()),
+		TokenLookup: "cookie:access-token",
 	}
 }
 
@@ -40,4 +43,15 @@ func getEnv(key string, defaultVal string) string {
 		log.Fatalf("environment variable %s cannot have a nil value", key)
 	}
 	return defaultVal
+}
+
+func GetJWTSecret() string {
+	return Config.JWTSecret
+}
+
+func LoadTestUser() *models.User {
+	// Just for demonstration purpose, we create a user with the encrypted "test" password.
+	// In real-world applications, you might load the user from the database by specific parameters (email, username, etc.)
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("test"), 8)
+	return &models.User{Password: string(hashedPassword), Email: "test@test.com"}
 }
