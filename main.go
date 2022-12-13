@@ -34,6 +34,7 @@ func main() {
 	r.Use(middleware.JWTWithConfig(config.AuthConfig))
 
 	r.GET("/home", handlers.Home)
+	r.GET("/logout", handlers.Logout)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
