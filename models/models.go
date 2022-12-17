@@ -8,6 +8,8 @@ type JWTClaims struct {
 }
 
 type User struct {
+	Uid      int64  `json:"uid" db:"uid"`
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
+	Name     string `json:"name" form:"name"`
 }

@@ -13,6 +13,11 @@ type AppConfig struct {
 	Port            string
 	TokenCookieName string
 	JWTSecret       string
+	DBName          string
+	DBUser          string
+	DBPassword      string
+	DBIp            string
+	DBPort          string
 }
 
 var Config AppConfig
@@ -27,6 +32,11 @@ func SetConfig() {
 		Port:            ":8080",
 		TokenCookieName: "access-token",
 		JWTSecret:       "my_private_key",
+		DBName:          "nixdb",
+		DBUser:          "root",
+		DBPassword:      "weak_password",
+		DBIp:            "127.0.0.1",
+		DBPort:          "3306",
 	}
 
 	AuthConfig = middleware.JWTConfig{

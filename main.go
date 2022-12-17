@@ -2,6 +2,7 @@ package main
 
 import (
 	"test-registration-form/config"
+	"test-registration-form/pkg/db"
 	"test-registration-form/pkg/handlers"
 	"test-registration-form/pkg/render"
 	"text/template"
@@ -15,6 +16,8 @@ func init() {
 }
 
 func main() {
+	//db
+	db.Init()
 	//web server
 	e := echo.New()
 	e.Static("/static", "web/static")
