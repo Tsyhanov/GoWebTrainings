@@ -34,7 +34,7 @@ func SetConfig() {
 		JWTSecret:       "my_private_key",
 		DBName:          "nixdb",
 		DBUser:          "root",
-		DBPassword:      "weak_password",
+		DBPassword:      "ebilock",
 		DBIp:            "127.0.0.1",
 		DBPort:          "3306",
 	}
@@ -63,5 +63,9 @@ func LoadTestUser() *models.User {
 	// Just for demonstration purpose, we create a user with the encrypted "111" password.
 	// In real-world applications, you might load the user from the database by specific parameters (email, username, etc.)
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("111"), 8)
-	return &models.User{Password: string(hashedPassword), Email: "test@test.com"}
+	return &models.User{
+		Password: string(hashedPassword),
+		Email:    "test@test.com",
+		Name:     "tester",
+	}
 }
