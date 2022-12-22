@@ -54,7 +54,12 @@ func addTestUser() {
 	db.Where("email = ?", "test@test.com").First(&u)
 	if u.ID != 0 {
 		fmt.Printf("email already exist")
-	}
+	} else {
+		u = config.LoadTestUser()
 
-	u = config.LoadTestUser()
+		result := db.Create(u)
+		if result.Error != nil {
+			panic("Could not create test user")
+		}
+	}
 }
