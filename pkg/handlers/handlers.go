@@ -18,6 +18,12 @@ func Login(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.tmpl.html", "login")
 }
 
+//get handler to show signup page
+func Signup(c echo.Context) error {
+	fmt.Println("signup handle")
+	return c.Render(http.StatusOK, "signup.tmpl.html", "signup")
+}
+
 //post handler. get email and password and create jwt
 func PostLogin(c echo.Context) error {
 	fmt.Println("PostLogin")
@@ -44,6 +50,14 @@ func PostLogin(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Token is incorrect")
 	}
 
+	return c.Redirect(http.StatusSeeOther, "/restricted/home")
+}
+
+//post handler for signup form
+func PostSignup(c echo.Context) error {
+	fmt.Println("postsignup handle")
+	name := c.FormValue("name")
+	fmt.Println("name is ", name)
 	return c.Redirect(http.StatusSeeOther, "/restricted/home")
 }
 

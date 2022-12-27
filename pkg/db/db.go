@@ -43,7 +43,7 @@ func migrate() {
 	if err != nil {
 		panic("Could not create User table")
 	}
-	//create first and one user for test
+	//create user for test if it doesn't exist
 	addTestUser()
 }
 
