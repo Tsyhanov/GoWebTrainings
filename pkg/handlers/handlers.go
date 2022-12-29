@@ -6,6 +6,7 @@ import (
 	"test-registration-form/config"
 	"test-registration-form/models"
 	"test-registration-form/pkg/auth"
+	"test-registration-form/pkg/db"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -27,9 +28,8 @@ func Signup(c echo.Context) error {
 //post handler. get email and password and create jwt
 func PostLogin(c echo.Context) error {
 	fmt.Println("PostLogin")
-	//TODO: check if user is available in db
+	//TODO: check if user is available in db and get a password to check
 	//....
-	//Generate JWT
 	storedUser := config.LoadTestUser() //for test only
 	//create new user based on User struct
 	u := new(models.User)
@@ -57,11 +57,34 @@ func PostLogin(c echo.Context) error {
 func PostSignup(c echo.Context) error {
 	fmt.Println("postsignup handle")
 	name := c.FormValue("name")
-	fmt.Println("name is ", name)
+	email := c.FormValue("email")
+	password := c.FormValue("password")
+	confirmPassword := c.FormValue("confirm_password")
+	if password != confirmPassword {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Password mismatch")
+	}
+
+	if db.CheckIfEmailExist(email) {
+		return echo.NewHTTPError(http.StatusUnauthorized, "email already exist")
+	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 8)
+
+	user := models.User{Name: name, Email: email, Password: string(hashedPassword)}
+	//add new user in db
+	if !db.CreateUser(&user) {
+		return echo.NewHTTPError(http.StatusUnauthorized, "could not create new user")
+	}
+	//generate token for new user
+	err := auth.GenerateTokensAndSetCookies(&user, c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Token is incorrect")
+	}
+
 	return c.Redirect(http.StatusSeeOther, "/restricted/home")
 }
 
-//show home page after login
+//home page handle (after login or signup)
 func Home(c echo.Context) error {
 	fmt.Println("home handle")
 	return c.Render(http.StatusOK, "home.tmpl.html", "home")

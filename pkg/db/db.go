@@ -63,3 +63,17 @@ func addTestUser() {
 		}
 	}
 }
+
+//check if user exist by email
+func CheckIfEmailExist(email string) bool {
+	var u *models.User
+	err := db.Where("email = ?", email).First(&u).Error
+	return err != gorm.ErrRecordNotFound
+}
+
+//Create new user
+func CreateUser(u *models.User) bool {
+	fmt.Println("db:CreateUser")
+	result := db.Create(&u)
+	return result.Error == nil
+}
