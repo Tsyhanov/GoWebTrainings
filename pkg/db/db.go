@@ -2,15 +2,21 @@ package db
 
 import (
 	"fmt"
+	"net/http"
 	"test-registration-form/config"
 	"test-registration-form/models"
 
+	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 var err error
+
+func DbManager() *gorm.DB {
+	return db
+}
 
 //init db connection, migration
 func Init() {
@@ -29,19 +35,17 @@ func Init() {
 	}
 
 	migrate()
-}
-
-func DbManager() *gorm.DB {
-	return db
+	//TODO: get comments and posts to insert it in db
+	//...
 }
 
 //Create tables if it does not exist
 func migrate() {
 	fmt.Println("db:migrate")
 
-	err := db.AutoMigrate(&models.User{})
+	err := db.AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{})
 	if err != nil {
-		panic("Could not create User table")
+		panic("db.migrate:Could not create table")
 	}
 	//create user for test if it doesn't exist
 	addTestUser()
@@ -64,7 +68,7 @@ func addTestUser() {
 	}
 }
 
-//check if user exist by email
+//check if email exist in db
 func CheckIfEmailExist(email string) bool {
 	var u *models.User
 	err := db.Where("email = ?", email).First(&u).Error
@@ -76,4 +80,53 @@ func CreateUser(u *models.User) bool {
 	fmt.Println("db:CreateUser")
 	result := db.Create(&u)
 	return result.Error == nil
+}
+
+//get user from db
+func GetUser(u *models.User, email string) error {
+	fmt.Println("db:GetUser")
+	err := db.First(&u, "email =?", email).Error
+	return err
+}
+
+//get all commments
+func GetComments(c echo.Context) error {
+	fmt.Println("getComments")
+	var cmt []models.Comment
+	result := db.Find(&cmt)
+
+	if result.Error != nil {
+		fmt.Println("select from comments error")
+	}
+	fmt.Println(result.RowsAffected)
+
+	return c.JSON(http.StatusOK, cmt)
+}
+
+//get all posts
+func GetPosts(c echo.Context) error {
+	fmt.Println("getPosts")
+	var p []models.Post
+	result := db.Find(&p)
+
+	if result.Error != nil {
+		fmt.Println("select from posts error")
+	}
+	fmt.Println(result.RowsAffected)
+
+	return c.JSON(http.StatusOK, p)
+}
+
+//add post
+func AddPost(p models.Post) error {
+	fmt.Println("db:Addost")
+	//TODO: insert post into db
+	return nil
+}
+
+//add post
+func AddComment(c models.Comment) error {
+	fmt.Println("db:AddComment")
+	//TODO: insert comment into db
+	return nil
 }

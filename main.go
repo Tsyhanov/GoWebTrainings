@@ -18,6 +18,9 @@ func init() {
 func main() {
 	//db
 	db.Init()
+	//TODO:
+	//get posts and comments from external endpoint...
+
 	//web server
 	e := echo.New()
 	e.Static("/static", "web/static")

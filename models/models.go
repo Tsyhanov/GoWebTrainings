@@ -19,12 +19,17 @@ type User struct {
 }
 
 type Post struct {
-	Id   int64  `json:"uid" gorm:"id"`
-	Body string `json:"body" gorm:"body"`
+	ID     int64  `json:"id" gorm:"id"`
+	UserId int64  `json:"userId" gorm:"userid"`
+	Title  string `json:"title" gorm:"title"`
+	Body   string `json:"body" gorm:"body"`
 }
 
 type Comment struct {
-	Id     int64  `json:"uid" gorm:"id"`
+	ID     int64  `json:"id" gorm:"id"`
+	Email  string `json:"email" gorm:"email"`
+	Name   string `json:"name" gorm:"name"`
 	Body   string `json:"body" gorm:"body"`
-	PostId int64  `json:"postid" gorm:"postid"`
+	PostId int64  `json:"postId" gorm:"postid"` //foreign key
+	Post   Post
 }
