@@ -2,6 +2,7 @@ package main
 
 import (
 	"test-registration-form/config"
+	"test-registration-form/pkg/concurrent"
 	"test-registration-form/pkg/db"
 	"test-registration-form/pkg/handlers"
 	"test-registration-form/pkg/render"
@@ -20,6 +21,7 @@ func main() {
 	db.Init()
 	//TODO:
 	//get posts and comments from external endpoint...
+	concurrent.GetPostsAndComments()
 
 	//web server
 	e := echo.New()

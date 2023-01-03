@@ -1,4 +1,4 @@
-package handlers
+package concurrent
 
 import (
 	"encoding/json"
@@ -14,19 +14,27 @@ import (
 
 func GetPostsAndComments() {
 	fmt.Println("concurrent:GetPostsAndComments")
-
-	//TODO: rewrite it to use concurrency
 	//get posts
+	var wgposts sync.WaitGroup
 	for i := 1; i <= 100; i++ {
-		GetPostFromEndpoint(strconv.Itoa(i))
-		//get comments for post
-		GetCommentsFromEndpoint(strconv.Itoa(i))
+		wgposts.Add(1)
+		go GetPostFromEndpoint(&wgposts, strconv.Itoa(i))
 	}
-
+	wgposts.Wait()
+	fmt.Println("concurrent:add posts wg done")
+	//get comments for post
+	var wgcomments sync.WaitGroup
+	for i := 1; i <= 100; i++ {
+		wgcomments.Add(1)
+		go GetCommentsFromEndpoint(&wgcomments, strconv.Itoa(i))
+	}
+	wgcomments.Wait()
 }
 
 //get posts from external endpoint
-func GetPostFromEndpoint(postid string) {
+func GetPostFromEndpoint(wg *sync.WaitGroup, postid string) {
+	defer wg.Done()
+
 	req := "https://jsonplaceholder.typicode.com/posts/" + postid
 
 	resp, err := http.Get(req)
@@ -46,13 +54,14 @@ func GetPostFromEndpoint(postid string) {
 		log.Printf("Post unmarshaling failed: %s", err)
 		return
 	}
-	fmt.Println("body:", p)
 
 	db.AddPost(p)
 }
 
 //get comments from external endpoint
-func GetCommentsFromEndpoint(postid string) {
+func GetCommentsFromEndpoint(wg *sync.WaitGroup, postid string) {
+	defer wg.Done()
+
 	req := "https://jsonplaceholder.typicode.com/comments?postId=" + postid
 
 	resp, err := http.Get(req)
@@ -72,7 +81,6 @@ func GetCommentsFromEndpoint(postid string) {
 		log.Printf("Post unmarshaling failed: %s", err)
 		return
 	}
-	fmt.Println("comments:", comments)
 
 	//create subroutines to insert comments into db
 	var wgcomments sync.WaitGroup

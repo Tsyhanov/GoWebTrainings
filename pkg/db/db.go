@@ -35,8 +35,7 @@ func Init() {
 	}
 
 	migrate()
-	//TODO: get comments and posts to insert it in db
-	//...
+
 }
 
 //Create tables if it does not exist
@@ -119,14 +118,18 @@ func GetPosts(c echo.Context) error {
 
 //add post
 func AddPost(p models.Post) error {
-	fmt.Println("db:Addost")
-	//TODO: insert post into db
+	result := db.Create(&p)
+	if result.Error != nil {
+		fmt.Println("AddPost error:", result.Error)
+	}
 	return nil
 }
 
 //add post
 func AddComment(c models.Comment) error {
-	fmt.Println("db:AddComment")
-	//TODO: insert comment into db
+	result := db.Create(&c)
+	if result.Error != nil {
+		fmt.Println("AddPost error:", result.Error)
+	}
 	return nil
 }
