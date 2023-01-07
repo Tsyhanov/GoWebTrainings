@@ -2,11 +2,9 @@ package db
 
 import (
 	"fmt"
-	"net/http"
 	"test-registration-form/config"
 	"test-registration-form/models"
 
-	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -89,45 +87,63 @@ func GetUser(u *models.User, email string) error {
 }
 
 //get all comments
-func GetComments(cmt []models.Comment) error {
+func GetComments() ([]models.Comment, error) {
+	var cmt []models.Comment
+
 	fmt.Println("getComments")
 	result := db.Find(&cmt)
 
 	if result.Error != nil {
 		fmt.Println("getComments error:", result.Error)
-		return result.Error
+		return cmt, result.Error
 	}
-	return nil
+	return cmt, nil
 }
 
 //get all posts
-func GetPosts(c echo.Context) error {
+func GetPosts() ([]models.Post, error) {
 	fmt.Println("getPosts")
 	var p []models.Post
 	result := db.Find(&p)
-
 	if result.Error != nil {
 		fmt.Println("select from posts error")
+		return p, result.Error
 	}
-	fmt.Println(result.RowsAffected)
+	return p, nil
+}
 
-	return c.JSON(http.StatusOK, p)
+//get post by id
+func GetPostById(id int) (models.Post, error) {
+	fmt.Println("getPostById")
+	var p models.Post
+	result := db.First(&p, id)
+
+	if result.Error != nil {
+		return p, result.Error
+	}
+	return p, nil
 }
 
 //add post
 func AddPost(p models.Post) error {
 	result := db.Create(&p)
 	if result.Error != nil {
+		fmt.Println("insert into posts error")
+	}
+
+	if result.Error != nil {
 		fmt.Println("AddPost error:", result.Error)
+		return result.Error
 	}
 	return nil
 }
 
-//add post
+//add comment
 func AddComment(c models.Comment) error {
 	result := db.Create(&c)
 	if result.Error != nil {
 		fmt.Println("AddPost error:", result.Error)
+		return result.Error
 	}
 	return nil
 }

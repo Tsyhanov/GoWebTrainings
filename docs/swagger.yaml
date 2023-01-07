@@ -9,8 +9,6 @@ definitions:
         type: integer
       name:
         type: string
-      post:
-        $ref: '#/definitions/models.Post'
       postId:
         description: foreign key
         type: integer
@@ -48,6 +46,97 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Comment'
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
       summary: Get all comments
+  /restricted/posts:
+    get:
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      summary: Get all posts
+  /restricted/posts/{id}:
+    get:
+      parameters:
+      - description: Post Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+      summary: Get post by id
+  /restricted/posts/{id}/comments/add:
+    post:
+      parameters:
+      - description: post Id
+        in: formData
+        name: postid
+        required: true
+        type: integer
+      - description: Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: E-mail
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Body
+        in: formData
+        name: body
+        required: true
+        type: string
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      summary: Add comment for given post Id
+  /restricted/posts/add:
+    post:
+      parameters:
+      - description: User Id
+        in: formData
+        name: userid
+        required: true
+        type: integer
+      - description: Post Title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Post Body
+        in: formData
+        name: body
+        required: true
+        type: string
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+      summary: Add post
 swagger: "2.0"

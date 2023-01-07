@@ -63,6 +63,10 @@ func main() {
 
 	r.GET("/logout", handlers.Logout)
 	r.GET("/comments", handlers.GetComments)
+	r.GET("/posts", handlers.GetPosts)
+	r.GET("/posts/:id", handlers.GetPostById)
+	r.POST("/posts/add", handlers.AddPost)
+	r.POST("/posts/:id/comments/add", handlers.AddComment)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

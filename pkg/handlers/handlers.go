@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"test-registration-form/config"
 	"test-registration-form/models"
 	"test-registration-form/pkg/auth"
@@ -113,11 +114,96 @@ func Logout(c echo.Context) error {
 // @Summary Get all comments
 // @Produce json
 // @Produce xml
-// @Success 200 {object} models.Comment
+// @Success 200 {array} models.Comment
 // @Router /restricted/comments [get]
 func GetComments(c echo.Context) error {
 	var cmt []models.Comment
-	err := db.GetComments(cmt)
+	cmt, err := db.GetComments()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, cmt)
+}
+
+// GetPosts godoc
+// @Summary Get all posts
+// @Produce json
+// @Produce xml
+// @Success 200 {array} models.Post
+// @Router /restricted/posts [get]
+func GetPosts(c echo.Context) error {
+	var p []models.Post
+	p, err := db.GetPosts()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, p)
+}
+
+// GetPostById godoc
+// @Summary Get post by id
+// @Produce json
+// @Produce xml
+// @Param id path int true "Post Id"
+// @Success 200 {object} models.Post
+// @Router /restricted/posts/{id} [get]
+func GetPostById(c echo.Context) error {
+	var p models.Post
+	id, _ := strconv.Atoi(c.Param("id"))
+	p, err := db.GetPostById(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, p)
+}
+
+// AddPost godoc
+// @Summary Add post
+// @Produce json
+// @Produce xml
+// @Param userid formData int true "User Id"
+// @Param title formData string true "Post Title"
+// @Param body formData string true "Post Body"
+// @Success 200 {object} models.Post
+// @Router /restricted/posts/add [post]
+func AddPost(c echo.Context) error {
+	fmt.Println("addPost")
+	userid := c.FormValue("userid")
+	title := c.FormValue("title")
+	body := c.FormValue("body")
+
+	i, _ := strconv.Atoi(userid)
+	p := models.Post{UserId: i, Title: title, Body: body}
+	err := db.AddPost(p)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, p)
+}
+
+// AddComment godoc
+// @Summary Add comment for given post Id
+// @Produce json
+// @Produce xml
+// @Param postid formData int true "post Id"
+// @Param name formData string true "Name"
+// @Param email formData string true "E-mail"
+// @Param body formData string true "Body"
+// @Success 200 {object} models.Comment
+// @Router /restricted/posts/{id}/comments/add [post]
+func AddComment(c echo.Context) error {
+	fmt.Println("addComment")
+	postid, _ := strconv.Atoi(c.FormValue("postid"))
+	name := c.FormValue("name")
+	email := c.FormValue("email")
+	body := c.FormValue("body")
+
+	cmt := models.Comment{PostId: postid, Name: name, Email: email, Body: body}
+	err := db.AddComment(cmt)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
