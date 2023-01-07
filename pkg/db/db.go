@@ -88,18 +88,16 @@ func GetUser(u *models.User, email string) error {
 	return err
 }
 
-//get all commments
-func GetComments(c echo.Context) error {
+//get all comments
+func GetComments(cmt []models.Comment) error {
 	fmt.Println("getComments")
-	var cmt []models.Comment
 	result := db.Find(&cmt)
 
 	if result.Error != nil {
-		fmt.Println("select from comments error")
+		fmt.Println("getComments error:", result.Error)
+		return result.Error
 	}
-	fmt.Println(result.RowsAffected)
-
-	return c.JSON(http.StatusOK, cmt)
+	return nil
 }
 
 //get all posts

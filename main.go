@@ -2,7 +2,6 @@ package main
 
 import (
 	"test-registration-form/config"
-	"test-registration-form/pkg/concurrent"
 	"test-registration-form/pkg/db"
 	"test-registration-form/pkg/handlers"
 	"test-registration-form/pkg/render"
@@ -10,18 +9,31 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
+
+	_ "test-registration-form/docs"
 )
 
 func init() {
 	config.SetConfig()
 }
 
+// @title Nix Education Trainee Task API
+// @version 1.0
+// @description This is a sample server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
 	//db
 	db.Init()
-	//TODO:
-	//get posts and comments from external endpoint...
-	concurrent.GetPostsAndComments()
+	//get posts and comments from external endpoint
+	//concurrent.GetPostsAndComments()
 
 	//web server
 	e := echo.New()
@@ -36,6 +48,7 @@ func main() {
 	}
 	//routes
 	e.GET("/", handlers.Login)
+
 	e.GET("/signup", handlers.Signup)
 	e.POST("/login", handlers.PostLogin)
 	e.POST("/signup", handlers.PostSignup)
@@ -46,7 +59,10 @@ func main() {
 	r.Use(middleware.JWTWithConfig(config.AuthConfig))
 
 	r.GET("/home", handlers.Home)
+	r.GET("/swagger/*", echoSwagger.WrapHandler)
+
 	r.GET("/logout", handlers.Logout)
+	r.GET("/comments", handlers.GetComments)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

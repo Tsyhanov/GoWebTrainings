@@ -44,8 +44,6 @@ func PostLogin(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Can not get user from db")
 	}
 	// Compare hashed password from db with the password from form
-	//fmt.Println(storedUser.Password)
-	//fmt.Println(u.Password)
 	if err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(u.Password)); err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Password is incorrect")
 	}
@@ -109,4 +107,20 @@ func Logout(c echo.Context) error {
 	c.SetCookie(cookie)
 
 	return c.Redirect(http.StatusSeeOther, "/")
+}
+
+// GetComments godoc
+// @Summary Get all comments
+// @Produce json
+// @Produce xml
+// @Success 200 {object} models.Comment
+// @Router /restricted/comments [get]
+func GetComments(c echo.Context) error {
+	var cmt []models.Comment
+	err := db.GetComments(cmt)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, cmt)
 }
